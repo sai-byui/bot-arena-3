@@ -9,7 +9,7 @@ class Agent:
     a hierarchy of managers and employees.
 
     AOP seeks to model software development after how humans perform complex tasks in groups. Each individual in a group
-    has the understanding and skills to achieve their tasks independent of other coworkers. Just as we cannot directly
+    has the understanding and skills to achieve their tasks independent of other coworkers. Just as we cannot forecfully
     change the data within someone's mind, AOP develops data integrity by preventing agents changing the member
     variables of one another unless they specifically ask for such information. If information is required by an
     individual they can ask the other agent for said data and then update they information. This convention improves
