@@ -2,8 +2,10 @@ from agent import Agent
 
 
 class Pathfinder(Agent):
+    """uses the A* path finding algorithm to determine the red_ai_pilot's movement"""
 
     def __init__(self):
+        """sets up path finding variables for use in the A* algorithm"""
         super(Pathfinder, self).__init__("pathfinder")
         # nodes which we know the f cost for but have not yet searched
         self.open_list = []
@@ -18,7 +20,7 @@ class Pathfinder(Agent):
         self.end_node = None
         self.current_node = None
         self.target = None
-        self.red_coordinate = self.share("red_ai_pilot", "red_coordinate")
+        self.red_coordinate = self.ask("red_ai_pilot", "red_coordinate")
         self.GRID_INCREMENT = self.ask("map_builder", "GRID_INCREMENT")
         self.NODE_STEP = self.ask("map_builder", "node_step")
 
@@ -26,11 +28,13 @@ class Pathfinder(Agent):
         # self.start_node_index =
 
     def determine_starting_point(self):
-        self.target = self.red_coordinate
+        """finds the node closest to our red_pilot's position and sets it as the start node"""
+        self.target = self.ask("red_ai_pilot", "red_coordinate")
         self.determine_goal()
         return self.end_node
 
     def determine_goal(self):
+        """finds the closest node to the given target coordinates"""
         # for each node in our graph, we check the coordinates to see if it's "close enough" to our goal coordinates
         for node in self.unvisited:
             if self.GRID_INCREMENT * self.NODE_STEP >= abs(node.x - self.target[0]) and \
@@ -43,9 +47,25 @@ class Pathfinder(Agent):
                 break
 
     def find_path(self, target_coordinates):
+        """uses the A* algorithm to find the best path from starting point to the end position
+
+        key variables:
+        unvisited: the list of all the nodes we start with in our graph
+        closed_list: nodes whose connections we have searched
+        open_list: nodes which we know the f cost for but have not yet searched
+
+        The find_path method works in the following steps:
+            1. the first node in your open_list becomes your current node whose connections you are searching
+            2. remove the current node from the open_list and place it into the closed_list
+            3. for each connection to the current node, find the connected node in our unvisited list and determine it's F cost
+            4. once a node's F cost is determined, sort it into the open_list from lowest F cost to Highest
+            5. when all the current node's connections have been checked, repeat steps 1 - 4 until your end goal is reached
+            """
+        # ask the map_builder for the entire graph of nodes which we will search through
         self.unvisited = self.ask("map_builder", "node_list")
         self.start_node = self.determine_starting_point()
 
+        # find our end node based on the passed coordinates
         self.target = target_coordinates
         self.determine_goal()
 
@@ -114,6 +134,7 @@ class Pathfinder(Agent):
         return self.final_path_list
 
     def find_node_index(self, node):
+        """searches our list of nodes and returns the index of the passed no"""
         node_name = node.name
         node_graph = self.unvisited
         for node in node_graph:
@@ -134,7 +155,7 @@ class Pathfinder(Agent):
             self.open_list.append(unvisited_node)
             return
 
-        # now we iterate through our list and place our unvisited node into the open_list based on it's f cost
+        # else we iterate through our list and place our unvisited node into the open_list based on it's f cost
         i = 0
         inserted = False
         for current_node in self.open_list:
@@ -152,6 +173,7 @@ class Pathfinder(Agent):
 
 def determine_cost(current_node, unvisited_node, end_node):
     """ uses the pythagorean theorem to determine the g and h cost of an unvisited node
+
         we determine the distance by measuring a straight line from our current node to our starting and ending node
         g = distance from the start node
         h = guess of how far we are from the end node

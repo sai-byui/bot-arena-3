@@ -9,6 +9,7 @@ BLUE = (0, 0, 255)
 
 
 class BluePlayerPilot(Agent):
+    """the blue rectangle agent whose decisions are determined by the user"""
 
     def __init__(self, environment=None):
         super(BluePlayerPilot, self).__init__("blue_player_pilot", environment)
@@ -22,10 +23,13 @@ class BluePlayerPilot(Agent):
         self.blue_coordinate = (self.rect.x, self.rect.y)
 
     def check_input_for_actions(self):
+        """checks user input in order to make decisions"""
         self.make_movements()
         self.shoot()
+        self.update_position()
 
     def make_movements(self):
+        """checks for any movements keys being pressed and moves accordingly"""
         key = pygame.key.get_pressed()
         if key[pygame.K_LEFT]:
             self.move(-2, 0)
@@ -37,7 +41,7 @@ class BluePlayerPilot(Agent):
             self.move(0, 2)
 
     def move(self, dx, dy):
-
+        """takes movement parameters and applies the value to the x and y coordinates"""
         # Move each axis separately. Note that this checks for collisions both times.
         if dx != 0:
             self.move_single_axis(dx, 0)
@@ -45,6 +49,7 @@ class BluePlayerPilot(Agent):
             self.move_single_axis(0, dy)
 
     def move_single_axis(self, dx, dy):
+        """checks for collision into walls while moving coordinates"""
         # Move the rect
         self.rect.x += dx
         self.rect.y += dy
@@ -63,5 +68,9 @@ class BluePlayerPilot(Agent):
                     self.rect.top = wall.rect.bottom
 
     def shoot(self):
+        """adds bullets to the game"""
         pass
+
+    def update_position(self):
+        self.blue_coordinate = (self.rect.x, self.rect.y)
 

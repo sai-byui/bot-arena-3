@@ -11,7 +11,14 @@ RED = (255, 0, 0)
 
 
 class RedAiPilot(Agent):
+    """Controls the behaviors of the red rectangle in the game
+
+    RedAiPilot's decisions are based on its current_behavior state. The state is determined by the conditions of its
+    environment. A full list of behaviors can be found at the bottom of the red_ai_pilot module in the
+    PilotAgentBehavior class."""
+
     def __init__(self, environment=None):
+        """sets up details about the red rectangle as well as variables for A.I. behavior"""
         super(RedAiPilot, self).__init__("red_ai_pilot", environment)
         self.rectangle = Rectangle()
         # set the rectangle's color
@@ -51,14 +58,13 @@ class RedAiPilot(Agent):
             self.next_node_coordinates = (self.path_course[0].x, self.path_course[0].y)
         if self.current_behavior == PilotAgentBehavior.CHASING:
             if not self.path_course:
+                self.path_found = False
                 return
             self.find_next_node()
             self.move_to_next_node()
 
-
-
     def check_distance_from_opponent(self):
-        self.blue_coordinate = self.ask("blue_player_pilot", "blue_coordinate")
+        self.update_coordinates()
         self.distance_from_blue_player = \
             abs(self.blue_coordinate[0] - self.red_coordinate[0]) + abs(self.blue_coordinate[1] - self.red_coordinate[1])
 
@@ -115,6 +121,10 @@ class RedAiPilot(Agent):
             self.move(0, -2)
         elif self.next_node_coordinates[1] > self.rect.centery:
             self.move(0, 2)
+
+    def update_coordinates(self):
+        self.red_coordinate = (self.rect.x, self.rect.y)
+        self.blue_coordinate = self.ask("blue_player_pilot", "blue_coordinate")
 
 
 class PilotAgentBehavior(Enum):
