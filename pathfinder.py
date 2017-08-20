@@ -25,7 +25,7 @@ class Pathfinder(Agent):
         self.NODE_STEP = self.ask("map_builder", "node_step")
 
         self.start_node = None
-        # self.start_node_index =
+        self.start_node_index = None
 
     def determine_starting_point(self):
         """finds the node closest to our red_pilot's position and sets it as the start node"""
@@ -42,8 +42,8 @@ class Pathfinder(Agent):
                 print("matched coordinates with node# " + str(node.name))
                 # use the matched node as the end node which we find the path to
                 self.end_node = node
-                # # our next start node will be our current end_node for the next time we find a path
-                # self.start_node_index = self.node_graph.index(node)
+                # our next start node will be our current end_node for the next time we find a path
+                self.start_node_index = self.unvisited.index(node)
                 break
 
     def find_path(self, target_coordinates):
@@ -63,7 +63,10 @@ class Pathfinder(Agent):
             """
         # ask the map_builder for the entire graph of nodes which we will search through
         self.unvisited = self.ask("map_builder", "node_list")
-        self.start_node = self.determine_starting_point()
+        if self.start_node_index is None:
+            self.start_node = self.determine_starting_point()
+        else:
+            self.start_node = self.unvisited[self.start_node_index]
 
         # find our end node based on the passed coordinates
         self.target = target_coordinates
@@ -131,6 +134,7 @@ class Pathfinder(Agent):
 
         # finally insert our start_node
         self.final_path_list.insert(0, self.start_node)
+
         return self.final_path_list
 
     def find_node_index(self, node):

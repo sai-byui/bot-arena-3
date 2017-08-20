@@ -25,9 +25,9 @@ class MainManager(Agent):
     def manage_bot_arena(self):
         """calls the game_manager to set up variables and then initializes the game loop"""
         self.initialize_pygame()
+        self.game_manager.build_walls()
         self.game_manager.initialize_screen()
         self.game_manager.setup_players()
-        self.game_manager.build_walls()
 
         while self.game_manager.running_game:
             self.clock.tick(60)

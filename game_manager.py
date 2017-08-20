@@ -45,7 +45,29 @@ class GameManager(Agent):
 
     def check_bullet_collisions(self):
         """checks if any bullets have collided with objects and need to be removed"""
-        pass
+        for bullet in self.bullet_list:
+            bullet.update_movement()
+            self.check_if_bullet_is_in_boundaries(bullet)
+            self.check_player_bullet_collision(bullet)
+            self.check_wall_bullet_collision(bullet)
+
+    def check_if_bullet_is_in_boundaries(self, bullet):
+        """removes the bullet if it is no longer on the map"""
+        if bullet.rect.x < 0 or bullet.rect.x > 1116 or bullet.rect.y < 0 or bullet.rect.y > 444:
+            self.bullet_list.remove(bullet)
+
+    def check_player_bullet_collision(self, bullet):
+        """checks if the bullet has collided with a player"""
+        for player in self.player_list:
+            if bullet.rect.colliderect(player):
+                player.hit_points -= 10
+                self.bullet_list.remove(bullet)
+
+    def check_wall_bullet_collision(self, bullet):
+        for wall_block in self.wall_list:
+            if bullet.rect.colliderect(wall_block):
+                self.bullet_list.remove(bullet)
+
 
     def check_pygame_events(self):
         """checks any for events such as keys pressed or A.I. actions that change the state of the game"""
@@ -74,15 +96,14 @@ class GameManager(Agent):
         self.red_ai_pilot.make_decision()
         self.blue_player_pilot.check_input_for_actions()
         self.check_bullet_collisions()
-        self.update()
         self.draw()
 
     def setup_players(self):
-        """adds the player sprites to the list of players for reference"""
-        self.player_list.add(self.red_ai_pilot.rectangle, self.blue_player_pilot.rectangle)
+        """adds the player sprites to the list of players for reference and sets up the bots in their environment"""
+        self.player_list.add(self.red_ai_pilot.bot, self.blue_player_pilot.bot)
+        self.blue_player_pilot.setup_bot_map()
+        self.red_ai_pilot.setup_bot_map()
 
-    def update(self):
-        self.bullet_list = self.play_window.get_object("bullet_list")
 
 
 
